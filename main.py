@@ -40,6 +40,8 @@ def load_train_data(image_dir, target_size=(224, 224, 3)):
             image_dir, image_path), target_size=target_size)
         images.append(image.img_to_array(img))
     X_orig = np.asarray(images)
+    # Free up memory from images
+    del images
     return X_orig
 
 
@@ -67,7 +69,7 @@ def main():
     print(df.head())
 
     Y_orig = extract_labels(df)
-    X_orig = load_train_data(util.IMAGE_PATH)
+    X_orig = load_train_data(util.IMAGE_PATH, target_size=(112,112,3))
 
     X_train, Y_train, X_test, Y_test = split_train_test(X_orig, Y_orig)
     X_train, X_test = normalize_train_test(X_train, X_test)
