@@ -8,7 +8,7 @@ SKIN_CANCER_HAMNIST_HAM_1000_PATH = os.path.join(
 METADATA_PATH = os.path.join(
     SKIN_CANCER_HAMNIST_HAM_1000_PATH, 'HAM10000_metadata.csv')
 IMAGE_PATH = os.path.join(SKIN_CANCER_HAMNIST_HAM_1000_PATH, 'images')
-MODEL_NAME = 'custom_vgg19.h5'
+MODEL_NAME = 'custom_transfer.h5'
 MODEL_PATH = os.path.join(ROOT_DIR, 'models')
 
 
@@ -28,7 +28,7 @@ class Utility:
         Returns:
             lr(float): The learning rate.
         '''
-        lr = 1e-3
+        lr = 1e-4
         if epoch > 180:
             lr *= 0.5e-3
         elif epoch > 160:

@@ -6,9 +6,9 @@ from keras.preprocessing import image
 from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 
-import util
-import train
 import custom_model
+import train
+import util
 
 
 def read_metadata():
@@ -69,7 +69,7 @@ def main():
     print(df.head())
 
     Y_orig = extract_labels(df)
-    X_orig = load_train_data(util.IMAGE_PATH, target_size=(112,112,3))
+    X_orig = load_train_data(util.IMAGE_PATH, target_size=(112, 112, 3))
 
     X_train, Y_train, X_test, Y_test = split_train_test(X_orig, Y_orig)
     X_train, X_test = normalize_train_test(X_train, X_test)
@@ -96,10 +96,10 @@ def main():
     num_epochs = int(num_epochs)
 
     # Train the model
-    model = custom_model.construct_VGG19(
-        input_size=X_train[0].shape, classes=Y_train.shape[1])
+    model = custom_model.load_pretrained_model(
+        input_shape=X_train[0].shape, classes=Y_train.shape[1])
     train.train(model, X_train, Y_train, X_test, Y_test,
-                num_epochs=num_epochs, batch_size=16, data_augmentation=False)
+                num_epochs=num_epochs, batch_size=8, data_augmentation=True)
 
 
 if __name__ == '__main__':
