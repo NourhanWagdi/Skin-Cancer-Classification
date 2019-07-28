@@ -242,15 +242,20 @@ def construct_Resnet18(input_shape=(32, 32, 3), classes=10):
 
 
 def load_pretrained_model(input_shape=(112, 112, 3), classes=7):
-    model = ResNet50(include_top=False, weights='imagenet', input_tensor=None,
+    base_model = ResNet50(include_top=False, weights='imagenet', input_tensor=None,
                      input_shape=input_shape)
 
-    X = model.output
+    X = base_model.output
     X = Flatten()(X)
+    X = Dense(1024, activation='softmax', name='fc'+str(1024),
+              kernel_initializer=glorot_uniform(seed=0))(X)
     X = Dense(classes, activation='softmax', name='fc'+str(classes),
               kernel_initializer=glorot_uniform(seed=0))(X)
 
-    model = Model(input=model.inputs, output=X)
+    model = Model(input=base_model.inputs, output=X)
+
+    for layer in base_model.layers:
+        layer.trainable = False
 
     return model
 

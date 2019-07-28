@@ -99,7 +99,7 @@ def main():
     model = custom_model.load_pretrained_model(
         input_shape=X_train[0].shape, classes=Y_train.shape[1])
     train.train(model, X_train, Y_train, X_test, Y_test,
-                num_epochs=num_epochs, batch_size=8, data_augmentation=True)
+                num_epochs=num_epochs, batch_size=16, data_augmentation=True)
 
 
 if __name__ == '__main__':
