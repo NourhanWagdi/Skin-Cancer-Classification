@@ -39,7 +39,7 @@ training = os.path.join(arrangedData, 'training')
 testing = os.path.join(arrangedData, 'testing')
 
 try:
-    #os.mkdir(arrangedData)
+    os.mkdir(arrangedData)
     os.mkdir(training)
     os.mkdir(testing)
 except Exception as e:
