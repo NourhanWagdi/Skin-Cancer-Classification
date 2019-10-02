@@ -3,7 +3,7 @@ from keras.layers import (Activation, Add, AveragePooling2D,
                           BatchNormalization, Conv2D, Dense, Flatten, Input,
                           MaxPooling2D, ZeroPadding2D)
 from keras.applications.resnet50 import ResNet50
-from keras.models import Model
+from keras.models import Model, Sequential
 from keras.optimizers import Adam
 from keras.utils import plot_model
 
@@ -241,9 +241,10 @@ def construct_Resnet18(input_shape=(32, 32, 3), classes=10):
     return model
 
 
-def load_pretrained_model(input_shape=(112, 112, 3), classes=7):
-    base_model = ResNet50(include_top=False, weights='imagenet', input_tensor=None,
-                     input_shape=input_shape)
+def load_pretrained_model(input_shape=(224, 224, 3), classes=7):
+    base_model = ResNet50(
+        include_top=False, weights='imagenet', input_tensor=None)
+    #                 input_shape=input_shape)
 
     X = base_model.output
     X = Flatten()(X)
@@ -257,6 +258,32 @@ def load_pretrained_model(input_shape=(112, 112, 3), classes=7):
     for layer in base_model.layers:
         layer.trainable = False
 
+    return model
+
+
+def naiveModel(input_shape=(150, 150, 3), classes=7):
+    model = Sequential([
+        Conv2D(16, (2, 2), activation='relu', input_shape=input_shape),
+        MaxPooling2D((2, 2)),
+
+        Conv2D(32, (2, 2), activation='relu'),
+        MaxPooling2D((2, 2)),
+
+        Conv2D(64, (2, 2), activation='relu'),
+        MaxPooling2D((2, 2)),
+
+        Conv2D(64, (2, 2), activation='relu'),
+        MaxPooling2D((2, 2)),
+
+        Conv2D(128, (2, 2), activation='relu'),
+        MaxPooling2D((2, 2)),
+
+        Flatten(),
+        Dense(1024, activation='relu'),
+        Dense(2048, activation='relu'),
+        Dense(classes, activation='softmax')
+    ])
+    print(model.summary())
     return model
 
 

@@ -98,3 +98,31 @@ def train(model, X_train, Y_train, X_test, Y_test, num_epochs, batch_size, data_
     # Evaluate the model
     _, test_acc = model.evaluate(X_test, Y_test)
     print("Accuracy on the test set: " + str(test_acc * 100) + "%")
+
+
+def trainRaw(model, trainDir, valDir, epochs):
+    model.compile(
+        Adam(lr=0.01), loss="sparse_categorical_crossentropy", metrics=['accuracy'])
+
+    trainDataGen = ImageDataGenerator(rescale=1./255,
+                                      rotation_range=40,
+                                      width_shift_range=0.2,
+                                      height_shift_range=0.2,
+                                      shear_range=0.2,
+                                      zoom_range=0.2,
+                                      horizontal_flip=True,
+                                      fill_mode='nearest')
+    trainGenerator = trainDataGen.flow_from_directory(trainDir,
+                                                      batch_size=100,
+                                                      class_mode="sparse",
+                                                      target_size=(150, 150))
+    valDataGen = ImageDataGenerator(rescale=1./255)
+    valGenerator = valDataGen.flow_from_directory(valDir,
+                                                  batch_size=100,
+                                                  class_mode="sparse",
+                                                  target_size=(150, 150))
+
+    history = model.fit_generator(
+        trainGenerator, epochs=epochs, verbose=1, validation_data=valGenerator, steps_per_epoch=100,validation_steps=50)
+
+    return history
