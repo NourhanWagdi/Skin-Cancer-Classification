@@ -68,6 +68,11 @@ def main():
     df = read_metadata()
     print(df.head())
 
+    # removde duplicates from df
+    df = df[['cell_type_idx', 'cell_type']].sort_values('cell_type_idx').drop_duplicates()
+
+    print(df.head())
+
     Y_orig = extract_labels(df)
     X_orig = load_train_data(util.IMAGE_PATH, target_size=(224, 224, 3))
 

@@ -98,3 +98,25 @@ for i in range(7):
 print(df_train['dx'].value_counts())
 
 #%%
+from glob import glob
+base_skin_dir = os.path.join('..', 'input')
+
+imageid_path_dict = {os.path.splitext(os.path.basename(x))[0]: x
+                     for x in glob(os.path.join(base_skin_dir, '*', '*.jpg'))}
+
+lesion_type_dict = {
+    'nv': 'Melanocytic nevi',
+    'mel': 'dermatofibroma',
+    'bkl': 'Benign keratosis-like lesions ',
+    'bcc': 'Basal cell carcinoma',
+    'akiec': 'Actinic keratoses',
+    'vasc': 'Vascular lesions',
+    'df': 'Dermatofibroma'
+}
+tile_df = pd.read_csv(os.path.join(base_skin_dir, 'HAM10000_metadata.csv'))
+tile_df['path'] = tile_df['image_id'].map(imageid_path_dict.get)
+tile_df['cell_type'] = tile_df['dx'].map(lesion_type_dict.get) 
+tile_df['cell_type_idx'] = pd.Categorical(tile_df['cell_type']).codes
+tile_df[['cell_type_idx', 'cell_type']].sort_values('cell_type_idx').drop_duplicates()
+
+# %%
