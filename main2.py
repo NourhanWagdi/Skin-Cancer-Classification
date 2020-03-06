@@ -12,7 +12,7 @@ TESTING_DIR = os.path.join(
     util.SKIN_CANCER_HAMNIST_HAM_1000_PATH, 'arrangedData/testing')
 
 model = custom_model.get_inception_model()
-history = train.trainRaw(model, TRAINING_DIR, TESTING_DIR, epochs=1)
+history = train.trainRaw(model, TRAINING_DIR, TESTING_DIR, epochs=25)
 
 # acc = history.history['acc']
 # val_acc = history.history['val_acc']
