@@ -1,8 +1,9 @@
 from keras.initializers import glorot_uniform
 from keras.layers import (Activation, Add, AveragePooling2D,
                           BatchNormalization, Conv2D, Dense, Flatten, Input,
-                          MaxPooling2D, ZeroPadding2D)
+                          MaxPooling2D, ZeroPadding2D, Dropout)
 from keras.applications.resnet50 import ResNet50
+from keras.applications.inception_v3 import InceptionV3
 from keras.models import Model, Sequential
 from keras.optimizers import Adam
 from keras.utils import plot_model
@@ -284,6 +285,20 @@ def naiveModel(input_shape=(150, 150, 3), classes=7):
         Dense(classes, activation='softmax')
     ])
     print(model.summary())
+    return model
+
+
+def get_inception_model(input_shape=(150, 150, 3), classes=7):
+    base_model = InceptionV3(
+        include_top=False, weights=None, input_tensor=None, input_shape=input_shape)
+
+    last_layer = base_model.output
+    X = Flatten()(last_layer)
+    X = Dense(1024, activation="relu")(X)
+    X = Dropout(0.5)(X)
+    X = Dense(classes, activation="softmax")(X)
+
+    model = Model(base_model.input, X)
     return model
 
 

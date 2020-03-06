@@ -3,6 +3,7 @@ import math
 import numpy as np
 from keras.applications.resnet50 import (ResNet50, decode_predictions,
                                          preprocess_input)
+from keras.applications.inception_v3 import preprocess_input
 from keras.callbacks import (EarlyStopping, LearningRateScheduler,
                              ModelCheckpoint, ReduceLROnPlateau)
 from keras.initializers import glorot_uniform
@@ -105,6 +106,7 @@ def trainRaw(model, trainDir, valDir, epochs):
         Adam(lr=0.01), loss="sparse_categorical_crossentropy", metrics=['accuracy'])
 
     trainDataGen = ImageDataGenerator(rescale=1./255,
+                                      preprocessing_function=preprocess_input,
                                       rotation_range=40,
                                       width_shift_range=0.2,
                                       height_shift_range=0.2,
@@ -113,12 +115,12 @@ def trainRaw(model, trainDir, valDir, epochs):
                                       horizontal_flip=True,
                                       fill_mode='nearest')
     trainGenerator = trainDataGen.flow_from_directory(trainDir,
-                                                      batch_size=100,
+                                                      batch_size=32,
                                                       class_mode="sparse",
                                                       target_size=(150, 150))
     valDataGen = ImageDataGenerator(rescale=1./255)
     valGenerator = valDataGen.flow_from_directory(valDir,
-                                                  batch_size=100,
+                                                  batch_size=32,
                                                   class_mode="sparse",
                                                   target_size=(150, 150))
 
