@@ -28,7 +28,7 @@ class Utility:
         Returns:
             lr(float): The learning rate.
         '''
-        lr = 1e-4
+        lr = 1e-2
         if epoch > 180:
             lr *= 0.5e-3
         elif epoch > 160:
