@@ -1,12 +1,12 @@
-from keras.initializers import glorot_uniform
-from keras.layers import (Activation, Add, AveragePooling2D,
+from tensorflow.keras.initializers import glorot_uniform
+from tensorflow.keras.layers import (Activation, Add, AveragePooling2D,
                           BatchNormalization, Conv2D, Dense, Flatten, Input,
                           MaxPooling2D, ZeroPadding2D, Dropout)
-from keras.applications.resnet50 import ResNet50
-from keras.applications.inception_v3 import InceptionV3
-from keras.models import Model, Sequential
-from keras.optimizers import Adam
-from keras.utils import plot_model
+from tensorflow.keras.applications.resnet50 import ResNet50
+from tensorflow.keras.applications.inception_v3 import InceptionV3
+from tensorflow.keras.models import Model, Sequential
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.utils import plot_model
 
 
 def apply_maxpool(X):
@@ -190,7 +190,7 @@ def construct_Resnet18(input_shape=(32, 32, 3), classes=10):
     classes -- integer, number of classes
 
     Returns:
-    model -- a Model() instance in Keras
+    model -- a Model() instance in tensorflow.keras
     """
     # Define input as a tensor of input shape
     X_input = Input(input_shape)
@@ -262,26 +262,21 @@ def load_pretrained_model(input_shape=(224, 224, 3), classes=7):
     return model
 
 
-def naiveModel(input_shape=(150, 150, 3), classes=7):
+def naiveModel(input_shape=(75, 100, 3), classes=7):
     model = Sequential([
-        Conv2D(16, (2, 2), activation='relu', input_shape=input_shape),
+        Conv2D(32, (3, 3), activation='relu', input_shape=input_shape),
+        Conv2D(32, (3, 3), activation='relu'),
         MaxPooling2D((2, 2)),
+        Dropout(0.25),
 
-        Conv2D(32, (2, 2), activation='relu'),
+        Conv2D(64, (3, 3), activation='relu'),
+        Conv2D(64, (3, 3), activation='relu'),
         MaxPooling2D((2, 2)),
-
-        Conv2D(64, (2, 2), activation='relu'),
-        MaxPooling2D((2, 2)),
-
-        Conv2D(64, (2, 2), activation='relu'),
-        MaxPooling2D((2, 2)),
-
-        Conv2D(128, (2, 2), activation='relu'),
-        MaxPooling2D((2, 2)),
+        Dropout(0.25),
 
         Flatten(),
-        Dense(1024, activation='relu'),
-        Dense(2048, activation='relu'),
+        Dense(128, activation='relu'),
+        Dropout(0.50),
         Dense(classes, activation='softmax')
     ])
     print(model.summary())
