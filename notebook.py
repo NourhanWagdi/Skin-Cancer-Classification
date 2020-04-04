@@ -158,7 +158,7 @@ samimg.resize((100,75))
 df_undup['image'] = df_undup['image_id'].map(
     lambda x: np.asarray(image.load_img(
         os.path.join(util.IMAGE_PATH, x + ".jpg")
-    ).resize((224,224)))
+    ).resize((75,75)))
 )
 
 
@@ -258,7 +258,7 @@ X_train, X_val, Y_train, Y_val = train_test_split(X_train, Y_train, test_size=0.
 
 # %%
 from custom_model import naiveModel, get_inception_model
-model = get_inception_model(input_shape=(224,224,3))
+model = get_inception_model(input_shape=(75,75,3))
 
 
 # %%
