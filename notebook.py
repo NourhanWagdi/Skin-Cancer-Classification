@@ -43,7 +43,7 @@ dx_type_stats = df['dx_type'].value_counts()
 
 
 # %%
-sns.barplot(x=dx_type_stats.index, y=dx_type_stats)
+# sns.barplot(x=dx_type_stats.index, y=dx_type_stats)
 
 
 # %%
