@@ -254,7 +254,7 @@ def load_pretrained_model(input_shape=(224, 224, 3), classes=7):
     X = Dense(classes, activation='softmax', name='fc'+str(classes),
               kernel_initializer=glorot_uniform(seed=0))(X)
 
-    model = Model(input=base_model.inputs, output=X)
+    model = Model(inputs=base_model.inputs, outputs=X)
 
     for layer in base_model.layers:
         layer.trainable = False
