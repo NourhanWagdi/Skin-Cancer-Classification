@@ -112,7 +112,7 @@ def load_img(df):
     df['image'] = df['image_id'].map(
         lambda x: np.asarray(image.load_img(
             os.path.join(util.IMAGE_PATH, x + ".jpg")
-        ).resize((224,224)))
+        ).resize((112,150)))
     )
     return df
 
@@ -156,7 +156,7 @@ X_val = np.asarray(df_val['image'].to_list())
 
 
 # %%
-X_train.shape
+print(X_train.shape)
 
 
 # %%
@@ -196,7 +196,7 @@ Y_train.shape
 
 # %%
 from custom_model import naiveModel, get_inception_model,load_pretrained_model
-model = naiveModel(input_shape=(224,224,3))
+model = naiveModel(input_shape=(112,150,3))
 
 
 # %%

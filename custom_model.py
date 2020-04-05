@@ -7,6 +7,7 @@ from tensorflow.keras.applications.inception_v3 import InceptionV3
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import plot_model
+from tensorflow.keras import regularizers
 
 
 def apply_maxpool(X):
@@ -285,13 +286,14 @@ def naiveModel(input_shape=(75, 100, 3), classes=7):
 
 def get_inception_model(input_shape=(150, 150, 3), classes=7):
     base_model = InceptionV3(
-        include_top=False, weights=None, input_tensor=None, input_shape=input_shape)
+        include_top=False, weights=
+        'imagenet', input_tensor=None, input_shape=input_shape,pooling='avg')
 
     last_layer = base_model.output
     X = Flatten()(last_layer)
-    X = Dense(1024, activation="relu")(X)
+    X = Dense(128, activation="relu", kernel_regularizer=regularizers.l2(0.02))(X)
     X = Dropout(0.5)(X)
-    X = Dense(classes, activation="softmax")(X)
+    X = Dense(classes, activation="softmax", kernel_regularizer=regularizers.l2(0.02))(X)
 
     model = Model(base_model.input, X)
     return model
