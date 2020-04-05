@@ -244,8 +244,7 @@ def construct_Resnet18(input_shape=(32, 32, 3), classes=10):
 
 def load_pretrained_model(input_shape=(224, 224, 3), classes=7):
     base_model = ResNet50(
-        include_top=False, weights='imagenet', input_tensor=None)
-    #                 input_shape=input_shape)
+        include_top=False, weights='imagenet', input_tensor=None, input_shape=input_shape)
 
     X = base_model.output
     X = Flatten()(X)
