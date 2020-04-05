@@ -169,6 +169,19 @@ train_std = np.std(X_train)
 
 X_train = (X_train - train_mean) / train_std
 
+ymap = {
+    'nv': 0,
+    'mel': 1,
+    'bkl': 2,
+    'bcc': 3,
+    'akiec': 4,
+    'vasc': 5,
+    'df': 6
+}
+
+Y_train = Y_train.map(ymap.get)
+Y_test = Y_test.map(ymap.get)
+Y_val = Y_val.map(ymap.get)
 
 # %%
 from tensorflow.keras.utils import to_categorical
