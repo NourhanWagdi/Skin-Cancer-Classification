@@ -251,6 +251,7 @@ def load_pretrained_model(input_shape=(224, 224, 3), classes=7):
     X = Flatten()(X)
     X = Dense(1024, activation='softmax', name='fc'+str(1024),
               kernel_initializer=glorot_uniform(seed=0))(X)
+    X = Dropout(0.5)(X)
     X = Dense(classes, activation='softmax', name='fc'+str(classes),
               kernel_initializer=glorot_uniform(seed=0))(X)
 
