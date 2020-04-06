@@ -111,8 +111,8 @@ df_train['dx'].value_counts()
 def load_img(df):
     df['image'] = df['image_id'].map(
         lambda x: np.asarray(image.load_img(
-            os.path.join(util.IMAGE_PATH, x + ".jpg")
-        ).resize((150,112)))
+            os.path.join(util.IMAGE_PATH, x + ".jpg"), target_size=(112, 150)
+        ))
     )
     return df
 
@@ -165,7 +165,11 @@ X_test.shape
 
 # %%
 train_mean = np.mean(X_train)
+
+#%%
 train_std = np.std(X_train)
+
+#%%
 
 X_train = (X_train - train_mean) / train_std
 
@@ -201,7 +205,7 @@ model = get_inception_model(input_shape=(112,150,3))
 
 # %%
 from train import train
-history = train(model, X_train, Y_train, X_val, Y_val, 30, 32, True)
+history = train(model, X_train, Y_train, X_val, Y_val, 30, 8, True)
 
 # %%
 _, test_acc = model.evaluate(X_test, Y_test)
