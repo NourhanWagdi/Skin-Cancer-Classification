@@ -250,15 +250,15 @@ def load_pretrained_model(input_shape=(224, 224, 3), classes=7):
     X = base_model.output
     X = Flatten()(X)
     X = Dense(1024, activation='softmax', name='fc'+str(1024),
-              kernel_initializer=glorot_uniform(seed=0))(X)
+              kernel_initializer=glorot_uniform(seed=0), kernel_regularizer=regularizers.l2(0.02))(X)
     X = Dropout(0.5)(X)
     X = Dense(classes, activation='softmax', name='fc'+str(classes),
-              kernel_initializer=glorot_uniform(seed=0))(X)
+              kernel_initializer=glorot_uniform(seed=0), kernel_regularizer=regularizers.l2(0.02))(X)
 
     model = Model(inputs=base_model.inputs, outputs=X)
 
     for layer in base_model.layers:
-        layer.trainable = False
+        layer.trainable = True
 
     return model
 

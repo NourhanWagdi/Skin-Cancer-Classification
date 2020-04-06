@@ -200,7 +200,7 @@ Y_train.shape
 
 # %%
 from custom_model import naiveModel, get_inception_model,load_pretrained_model
-model = get_inception_model(input_shape=(150,150,3))
+model = load_pretrained_model(input_shape=(150,150,3))
 
 
 # %%
