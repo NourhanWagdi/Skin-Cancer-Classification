@@ -95,7 +95,7 @@ def train(model, X_train, Y_train, X_test, Y_test, num_epochs, batch_size, data_
                             validation_data=(X_test, Y_test),
                             epochs=num_epochs, verbose=1, workers=4,
                             callbacks=callbacks,
-                            use_multiprocessing=True,
+                            use_multiprocessing=False,
                             steps_per_epoch=math.ceil(len(X_train) / batch_size))
 
     # Evaluate the model

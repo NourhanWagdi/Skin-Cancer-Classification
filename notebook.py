@@ -111,7 +111,7 @@ df_train['dx'].value_counts()
 def load_img(df):
     df['image'] = df['image_id'].map(
         lambda x: np.asarray(image.load_img(
-            os.path.join(util.IMAGE_PATH, x + ".jpg"), target_size=(112, 150)
+            os.path.join(util.IMAGE_PATH, x + ".jpg"), target_size=(32, 32)
         ))
     )
     return df
@@ -128,7 +128,7 @@ df_val = load_img(df_val)
 data_aug_rate = [15,10,5,50,0,40,5]
 for i in range(7):
     if data_aug_rate[i]:
-        df_train=df_train.append([df_train.loc[df_train['cell_type_idx'] == i,:]]*(data_aug_rate[i]-1),                                                 ignore_index=True)
+        df_train=df_train.append([df_train.loc[df_train['cell_type_idx'] == i,:]]*(data_aug_rate[i]-1), ignore_index=True)
 
 
 # %%
@@ -200,12 +200,12 @@ Y_train.shape
 
 # %%
 from custom_model import naiveModel, get_inception_model,load_pretrained_model
-model = get_inception_model(input_shape=(112,150,3))
+model = naiveModel(input_shape=(32,32,3))
 
 
 # %%
 from train import train
-history = train(model, X_train, Y_train, X_val, Y_val, 30, 8, True)
+history = train(model, X_train, Y_train, X_val, Y_val, 200, 16, False)
 
 # %%
 _, test_acc = model.evaluate(X_test, Y_test)
