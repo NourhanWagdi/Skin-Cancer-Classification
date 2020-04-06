@@ -205,7 +205,7 @@ model = get_inception_model(input_shape=(150,150,3))
 
 # %%
 from train import train
-history = train(model, X_train, Y_train, X_val, Y_val, 200, 8, False)
+history = train(model, X_train, Y_train, X_val, Y_val, 50, 32, False)
 
 # %%
 _, test_acc = model.evaluate(X_test, Y_test)

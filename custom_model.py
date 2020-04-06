@@ -296,7 +296,7 @@ def get_inception_model(input_shape=(150, 150, 3), classes=7):
     X = Dense(classes, activation="softmax", kernel_regularizer=regularizers.l2(0.02))(X)
 
     for layer in base_model.layers:
-        layer.trainable = True
+        layer.trainable = False
 
     model = Model(base_model.input, X)
     return model
