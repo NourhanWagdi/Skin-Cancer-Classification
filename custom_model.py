@@ -276,9 +276,9 @@ def naiveModel(input_shape=(75, 100, 3), classes=7):
         Dropout(0.25),
 
         Flatten(),
-        Dense(128, activation='relu'),
+        Dense(128, activation='relu',  kernel_regularizer=regularizers.l2(0.02)),
         Dropout(0.50),
-        Dense(classes, activation='softmax')
+        Dense(classes, activation='softmax',  kernel_regularizer=regularizers.l2(0.02))
     ])
     print(model.summary())
     return model
