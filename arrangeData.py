@@ -145,7 +145,7 @@ import numpy as np
 from shutil import rmtree, copy
 aug_dir_path = os.path.join(dest, aug_dir)
 
-class_list = ['mel','bkl','bcc','akiec','vasc','df']
+class_list = ['bkl','bcc','akiec','vasc','df']
 
 for item in class_list:
     os.mkdir(aug_dir_path)
