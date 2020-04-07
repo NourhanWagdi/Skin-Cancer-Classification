@@ -142,7 +142,7 @@ aug_dir = 'aug_dir'
 #%%
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import numpy as np
-from shutil import rmtree
+from shutil import rmtree, copy
 aug_dir_path = os.path.join(dest, aug_dir)
 
 class_list = ['mel','bkl','bcc','akiec','vasc','df']
