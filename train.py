@@ -15,6 +15,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.utils import plot_model
+from tensorflow.keras.metrics import categorical_accuracy, top_k_categorical_accuracy
 
 from util import Utility
 
@@ -104,31 +105,49 @@ def train(model, X_train, Y_train, X_test, Y_test, num_epochs, batch_size, data_
 
     return history
 
+def top_3_accuracy(y_true, y_pred):
+    return top_k_categorical_accuracy(y_true, y_pred, k=3)
 
-def trainRaw(model, trainDir, valDir, epochs):
+def top_2_accuracy(y_true, y_pred):
+    return top_k_categorical_accuracy(y_true, y_pred, k=2)
+
+def trainRaw(model, trainDir, valDir, testDir, epochs):
+    
     model.compile(
-        Adam(lr=0.01), loss="sparse_categorical_crossentropy", metrics=['accuracy'])
+        Adam(lr=0.001), loss="sparse_categorical_crossentropy", metrics=['acc'])
+    
+    checkpoint = ModelCheckpoint(Utility().getModelPath(), monitor='val_acc', verbose=1, 
+                             save_best_only=True, mode='max')
+    
+    reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=2, 
+                                   verbose=1, mode='max', min_lr=0.00001)
 
-    trainDataGen = ImageDataGenerator(rescale=1./255,
-                                      preprocessing_function=preprocess_input,
-                                      rotation_range=40,
-                                      width_shift_range=0.2,
-                                      height_shift_range=0.2,
-                                      shear_range=0.2,
-                                      zoom_range=0.2,
-                                      horizontal_flip=True,
-                                      fill_mode='nearest')
+    callbacks_list = [checkpoint, reduce_lr]
+
+    trainDataGen = ImageDataGenerator(rescale=1./255)
     trainGenerator = trainDataGen.flow_from_directory(trainDir,
-                                                      batch_size=32,
+                                                      batch_size=10,
                                                       class_mode="sparse",
-                                                      target_size=(150, 150))
+                                                      target_size=(224, 224),
+                                                      shuffle=True)
     valDataGen = ImageDataGenerator(rescale=1./255)
     valGenerator = valDataGen.flow_from_directory(valDir,
-                                                  batch_size=32,
+                                                  batch_size=10,
                                                   class_mode="sparse",
-                                                  target_size=(150, 150))
+                                                  target_size=(224, 224),
+                                                  shuffle=True)
+
+    testDataGen = ImageDataGenerator(rescale=1./255)
+    testgenerator = testDataGen.flow_from_directory(testDir,
+                                                  batch_size=10,
+                                                  class_mode="sparse",
+                                                  target_size=(224, 224),
+                                                  shuffle=False)
 
     history = model.fit_generator(
-        trainGenerator, epochs=epochs, verbose=1, validation_data=valGenerator, steps_per_epoch=100,validation_steps=50)
+        trainGenerator, epochs=epochs, verbose=1, validation_data=valGenerator, steps_per_epoch=100,validation_steps=50, callbacks=callbacks_list)
 
+    test_loss, test_acc = model.evaluate_generator(testgenerator, steps=772)
+    print(test_loss)
+    print(test_acc)
     return history

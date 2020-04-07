@@ -210,6 +210,3 @@ history = train(model, X_train, Y_train, X_val, Y_val, 50, 32, False)
 # %%
 _, test_acc = model.evaluate(X_test, Y_test)
 print("Accuracy on the test set = ", str(test_acc * 100))
-
-
-

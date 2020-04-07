@@ -7,86 +7,185 @@ import util
 #%%
 df= pd.read_csv(util.METADATA_PATH)
 print(df.head())
+lesion_type_dict = {
+    'nv': 'Melanocytic nevi',
+    'mel': 'dermatofibroma',
+    'bkl': 'Benign keratosis-like lesions ',
+    'bcc': 'Basal cell carcinoma',
+    'akiec': 'Actinic keratoses',
+    'vasc': 'Vascular lesions',
+    'df': 'Dermatofibroma'
+}
+
+# %%
+df['cell_type'] = df['dx'].map(lesion_type_dict.get)
+df['cell_type_idx'] = pd.Categorical(df['cell_type']).codes
+df.head()
+
+
+
+# %%
+df_undup = df.groupby('lesion_id').count()
+df_undup = df_undup[df_undup['image_id'] == 1]
+df_undup.reset_index(inplace=True)
+df_undup.head()
+
+
+# %%
+def get_duplicates(x):
+    unique_list = list(df_undup['lesion_id'])
+    if x in unique_list:
+        return 'unduplicated'
+    else:
+        return 'duplicated'
+
+# create a new colum that is a copy of the lesion_id column
+df['duplicates'] = df['lesion_id']
+# apply the function to this new column
+df['duplicates'] = df['duplicates'].apply(get_duplicates)
+df.head()
+
+
+# %%
+df['duplicates'].value_counts()
+
+
+# %%
+df_undup = df[df['duplicates'] == 'unduplicated']
+df_undup.shape
+
+
+# %%
+# Train Test Split Data
+from sklearn.model_selection import train_test_split
+_, df_test = train_test_split(df_undup,test_size=0.2, random_state=42)
+df_test.shape
+
+
+# %%
+def get_val_rows(x):
+    test_list = list(df_test['image_id'])
+    if str(x) in test_list:
+        return 'test'
+    else:
+        return 'train'
+
+df['train_or_test'] = df['image_id']
+df['train_or_test'] = df['train_or_test'].apply(get_val_rows)
+df_train = df[df['train_or_test'] == 'train']
+df_test =df[df['train_or_test'] == 'test']
+
+
+# %%
+df_train.shape
+
+
+# %%
+df_test.shape
+
+
+# %%
+# Split test data into validation data
+df_test, df_val = train_test_split(df_test, test_size=0.3, random_state=101)
+df_val.shape
 
 #%%
-distinct_dx_type = df['dx'].unique()
-print(distinct_dx_type)
+df_val['dx'].value_counts()
 
 #%%
-distinct_img_dir_path = os.path.join(util.SKIN_CANCER_HAMNIST_HAM_1000_PATH, "distinctImages")
-os.mkdir(distinct_img_dir_path)
-for dx in distinct_dx_type:
-    try:
-        os.mkdir(os.path.join(distinct_img_dir_path,dx))
-    except Exception as e:
-        print("failed to make directory.", e)
+df_train['dx'].value_counts()
 
 #%%
-imageIds = os.listdir(util.IMAGE_PATH)
+df_test['dx'].value_counts()
+
 #%%
+df_test['dx'].iloc[0]
+#%%
+# Transfer images from source to destination
+df_train.head()
+
 from shutil import copy
+def copy_data(df, src, dest):
+    images = list(df['image_id'])
+    i = 0
+    for image in images:
+        fname = image + ".jpg" 
+        tempsrc = os.path.join(src, fname)
+        temp = os.path.join(df['dx'].iloc[i],fname)
+        tempdest = os.path.join(dest, temp)
+        copy(tempsrc, tempdest)
+        i += 1
+#%%
+src = util.IMAGE_PATH
+dest = util.SKIN_CANCER_HAMNIST_HAM_1000_PATH
+dest = os.path.join(dest, 'arrangedData')
+traindest = os.path.join(dest, 'training')
+testdest = os.path.join(dest, 'testing')
+valdest = os.path.join(dest, 'validation')
 
-for image_id in imageIds:
-    temp = image_id.replace(".jpg", "")
-    tempDest = df.loc[df['image_id'] == temp, 'dx'].iloc[0]
-    dest = os.path.join(os.path.join(distinct_img_dir_path, tempDest), image_id)
-    src = os.path.join(util.IMAGE_PATH, image_id)
-    copy(src, dest)
+print(traindest)
+print(testdest)
+print(valdest)
 
 #%%
-arrangedData = os.path.join(util.SKIN_CANCER_HAMNIST_HAM_1000_PATH, 'arrangedData')
-training = os.path.join(arrangedData, 'training')
-testing = os.path.join(arrangedData, 'testing')
-
-try:
-    os.mkdir(arrangedData)
-    os.mkdir(training)
-    os.mkdir(testing)
-except Exception as e:
-    print(e)
+copy_data(df_val, src, valdest)
 
 #%%
-for dx in distinct_dx_type:
-    try:
-        os.mkdir(os.path.join(training,dx))
-        os.mkdir(os.path.join(testing,dx))
-    except Exception as e:
-        print("failed to make directory.", e)
+copy_data(df_test, src, testdest)
 
 #%%
-from shutil import copyfile
-import random
-def split_data(SOURCE, TRAINING, TESTING, SPLIT_SIZE):
-    files = []
-    for filename in os.listdir(SOURCE):
-        file = os.path.join(SOURCE, filename)
-        if os.path.getsize(file) > 0:
-            files.append(filename)
-        else:
-            print(filename + " is zero length, so ignoring.")
-
-    training_length = int(len(files) * SPLIT_SIZE)
-    testing_length = int(len(files) - training_length)
-    shuffled_set = random.sample(files, len(files))
-    training_set = shuffled_set[0:training_length]
-    testing_set = shuffled_set[-testing_length:]
-
-    for filename in training_set:
-        this_file = os.path.join(SOURCE, filename)
-        destination = os.path.join(TRAINING, filename)
-        copyfile(this_file, destination)
-
-    for filename in testing_set:
-        this_file = os.path.join(SOURCE, filename)
-        destination = os.path.join(TESTING, filename)
-        copyfile(this_file, destination)
+copy_data(df_train, src, traindest)
 
 #%%
-splitSize = .9
-for dx in distinct_dx_type:
-    srcPath = os.path.join(distinct_img_dir_path, dx)
-    trainingPath = os.path.join(training, dx)
-    testingPath = os.path.join(testing, dx)
-    split_data(srcPath, trainingPath, testingPath, splitSize)
-
+aug_dir = 'aug_dir'
+os.mkdir(os.path.join(dest, aug_dir))
 #%%
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import numpy as np
+from shutil import rmtree
+aug_dir_path = os.path.join(dest, aug_dir)
+
+class_list = ['mel','bkl','bcc','akiec','vasc','df']
+
+for item in class_list:
+    os.mkdir(aug_dir_path)
+    temp_dir_path = os.path.join(aug_dir_path,'temp')
+    os.mkdir(temp_dir_path)
+    
+    itempath = os.path.join(traindest, item)
+    images = os.listdir(itempath)
+
+    for fname in images:
+        src = os.path.join(itempath, fname)
+        dst = os.path.join(temp_dir_path, fname)
+        copy(src,dst)
+
+    datagen = ImageDataGenerator(
+        rotation_range=180,
+        width_shift_range=0.1,
+        height_shift_range=0.1,
+        zoom_range=0.1,
+        horizontal_flip=True,
+        vertical_flip=True,
+        fill_mode='nearest'
+    )
+
+    batch_size = 50
+
+    aug_datagen = datagen.flow_from_directory(
+        aug_dir_path,
+        save_to_dir=itempath,
+        save_format='jpg',
+        target_size=(224,224),
+        batch_size=batch_size
+    )
+
+    num_aug_images = 6000
+    num_files = len(os.listdir(temp_dir_path))
+    num_batches = int(np.ceil((num_aug_images - num_files) / batch_size))
+
+    for i in range(0, num_batches):
+        imgs, lbls = next(aug_datagen)
+    
+
+    rmtree(aug_dir_path)

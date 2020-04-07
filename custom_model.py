@@ -4,6 +4,7 @@ from tensorflow.keras.layers import (Activation, Add, AveragePooling2D,
                           MaxPooling2D, ZeroPadding2D, Dropout)
 from tensorflow.keras.applications.resnet50 import ResNet50
 from tensorflow.keras.applications.inception_v3 import InceptionV3
+from tensorflow.keras.applications.densenet import DenseNet201
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import plot_model
@@ -284,7 +285,7 @@ def naiveModel(input_shape=(75, 100, 3), classes=7):
     return model
 
 
-def get_inception_model(input_shape=(150, 150, 3), classes=7):
+def get_inception_model(input_shape=(224, 224, 3), classes=7):
     base_model = InceptionV3(
         include_top=False, weights=
         'imagenet', input_tensor=None, input_shape=input_shape,pooling='avg')
@@ -296,11 +297,25 @@ def get_inception_model(input_shape=(150, 150, 3), classes=7):
     X = Dense(classes, activation="softmax", kernel_regularizer=regularizers.l2(0.02))(X)
 
     for layer in base_model.layers:
-        layer.trainable = False
+        layer.trainable = True
 
     model = Model(base_model.input, X)
     return model
 
+def densenet():
+    base_model = DenseNet201(include_top=False, weights='imagenet', input_tensor=None, input_shape=(224,224,3))
+
+    last_layer = base_model.output
+    X = Flatten()(last_layer)
+    X = Dense(128, activation="relu", kernel_regularizer=regularizers.l2(0.02))(X)
+    X = Dropout(0.5)(X)
+    X = Dense(7, activation="softmax", kernel_regularizer=regularizers.l2(0.02))(X)
+
+    for layer in base_model.layers:
+        layer.trainable = False
+
+    model = Model(base_model.input, X)
+    return model
 
 def main():
     # model = construct_VGG19()
