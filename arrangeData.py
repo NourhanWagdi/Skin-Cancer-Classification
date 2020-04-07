@@ -148,7 +148,7 @@ aug_dir_path = os.path.join(dest, aug_dir)
 class_list = ['mel','bkl','bcc','akiec','vasc','df']
 
 for item in class_list:
-    #os.mkdir(aug_dir_path)
+    os.mkdir(aug_dir_path)
     temp_dir_path = os.path.join(aug_dir_path,'temp')
     os.mkdir(temp_dir_path)
     
