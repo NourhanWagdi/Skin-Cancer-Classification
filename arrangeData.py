@@ -116,16 +116,16 @@ import util
 #         copy(tempsrc, tempdest)
 #         i += 1
 # #%%
-# src = util.IMAGE_PATH
-# dest = util.SKIN_CANCER_HAMNIST_HAM_1000_PATH
-# dest = os.path.join(dest, 'arrangedData')
-# traindest = os.path.join(dest, 'training')
-# testdest = os.path.join(dest, 'testing')
-# valdest = os.path.join(dest, 'validation')
+src = util.IMAGE_PATH
+dest = util.SKIN_CANCER_HAMNIST_HAM_1000_PATH
+dest = os.path.join(dest, 'arrangedData')
+traindest = os.path.join(dest, 'training')
+testdest = os.path.join(dest, 'testing')
+valdest = os.path.join(dest, 'validation')
 
-# print(traindest)
-# print(testdest)
-# print(valdest)
+print(traindest)
+print(testdest)
+print(valdest)
 
 # #%%
 # copy_data(df_val, src, valdest)
@@ -137,7 +137,7 @@ import util
 # copy_data(df_train, src, traindest)
 
 # #%%
-# aug_dir = 'aug_dir'
+aug_dir = 'aug_dir'
 # os.mkdir(os.path.join(dest, aug_dir))
 #%%
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
