@@ -120,7 +120,7 @@ def trainRaw(model, trainDir, valDir, testDir, epochs):
                              save_best_only=True, mode='max')
     
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=2, 
-                                   verbose=1, mode='max', min_lr=0.00001)
+                                   verbose=1, mode='max', min_lr=0.00000001)
 
     callbacks_list = [checkpoint, reduce_lr]
 
